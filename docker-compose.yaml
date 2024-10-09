@@ -1,0 +1,30 @@
+services:
+  clickhouse:
+    image: "clickhouse/clickhouse-server"
+    volumes:
+      - ./ch_data:/var/lib/clickhouse/
+      - ./ch_logs:/var/log/clickhouse-server/
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    environment:
+#      - CLICKHOUSE_USER=ch
+#      - CLICKHOUSE_PASSWORD=ch
+      - CLICKHOUSE_DB=iccup
+#      - CLICKHOUSE_DEFAULT_ACCESS_MANAGEMENT=1
+
+# NB: when creating datasource in Grafana - put "clickhouse" as an url ("localhost" wouldn't work)
+  grafana:
+    image: grafana/grafana-enterprise
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana_data:/var/lib/grafana
+    environment:
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_INSTALL_PLUGINS=grafana-clickhouse-datasource
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
